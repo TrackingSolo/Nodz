@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nodz — Sleep Cycle Smart Alarm</title>
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: #0D1117;
+      color: #E6EDF3;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      padding: 24px 16px 64px;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      padding: 48px 0 40px;
+      border-bottom: 1px solid #21262D;
+      margin-bottom: 40px;
+    }
+
+    header .app-icon {
+      font-size: 3rem;
+      display: block;
+      margin-bottom: 12px;
+    }
+
+    header h1 {
+      font-size: 2.4rem;
+      font-weight: 700;
+      color: #E6EDF3;
+      letter-spacing: -0.5px;
+    }
+
+    header .tagline {
+      margin-top: 10px;
+      font-size: 1.05rem;
+      color: #8B949E;
+    }
+
+    .section {
+      background-color: #161B22;
+      border: 1px solid #21262D;
+      border-radius: 12px;
+      padding: 32px 28px;
+      margin-bottom: 28px;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #21262D;
+    }
+
+    .section-icon {
+      font-size: 1.8rem;
+      flex-shrink: 0;
+    }
+
+    .section-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #58A6FF;
+      letter-spacing: -0.2px;
+    }
+
+    p {
+      color: #C9D1D9;
+      margin-bottom: 14px;
+    }
+
+    p:last-child {
+      margin-bottom: 0;
+    }
+
+    .feature-list {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 14px;
+    }
+
+    .feature-list li {
+      color: #C9D1D9;
+      padding: 7px 0 7px 20px;
+      position: relative;
+      border-bottom: 1px solid #21262D;
+    }
+
+    .feature-list li:last-child {
+      border-bottom: none;
+    }
+
+    .feature-list li::before {
+      content: "▸";
+      color: #58A6FF;
+      position: absolute;
+      left: 0;
+      top: 7px;
+    }
+
+    .step-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      counter-reset: steps;
+    }
+
+    .step-list li {
+      counter-increment: steps;
+      display: flex;
+      gap: 16px;
+      padding: 14px 0;
+      border-bottom: 1px solid #21262D;
+    }
+
+    .step-list li:last-child {
+      border-bottom: none;
+    }
+
+    .step-number {
+      flex-shrink: 0;
+      width: 28px;
+      height: 28px;
+      background-color: #58A6FF;
+      color: #0D1117;
+      font-weight: 700;
+      font-size: 0.85rem;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 1px;
+    }
+
+    .step-content {
+      flex: 1;
+    }
+
+    .step-title {
+      font-weight: 600;
+      color: #E6EDF3;
+      margin-bottom: 4px;
+    }
+
+    .step-detail {
+      color: #8B949E;
+      font-size: 0.92rem;
+      line-height: 1.5;
+    }
+
+    .step-detail a {
+      color: #58A6FF;
+      text-decoration: none;
+    }
+
+    .step-detail a:hover {
+      text-decoration: underline;
+    }
+
+    .sub-list {
+      list-style: none;
+      padding: 0;
+      margin: 8px 0 0;
+    }
+
+    .sub-list li {
+      font-size: 0.9rem;
+      color: #8B949E;
+      padding: 3px 0 3px 16px;
+      position: relative;
+    }
+
+    .sub-list li::before {
+      content: "–";
+      color: #58A6FF;
+      position: absolute;
+      left: 0;
+    }
+
+    .flow-block {
+      background-color: #0D1117;
+      border: 1px solid #21262D;
+      border-left: 3px solid #58A6FF;
+      border-radius: 8px;
+      padding: 18px 20px;
+      margin: 20px 0;
+    }
+
+    .flow-block .flow-title {
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #58A6FF;
+      margin-bottom: 12px;
+    }
+
+    .flow-steps {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .flow-steps li {
+      color: #C9D1D9;
+      font-size: 0.93rem;
+      padding: 5px 0;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .flow-arrow {
+      color: #58A6FF;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 14px;
+      margin-top: 20px;
+    }
+
+    .stat-card {
+      background-color: #0D1117;
+      border: 1px solid #21262D;
+      border-radius: 8px;
+      padding: 16px;
+      text-align: center;
+    }
+
+    .stat-label {
+      font-size: 0.8rem;
+      color: #8B949E;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 6px;
+    }
+
+    .stat-value {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: #58A6FF;
+    }
+
+    .badge {
+      display: inline-block;
+      background-color: #1F2937;
+      border: 1px solid #374151;
+      color: #9CA3AF;
+      font-size: 0.78rem;
+      font-weight: 500;
+      padding: 2px 8px;
+      border-radius: 12px;
+      margin-left: 6px;
+      vertical-align: middle;
+    }
+
+    .info-box {
+      background-color: #0D1117;
+      border: 1px solid #21262D;
+      border-left: 3px solid #3FB950;
+      border-radius: 8px;
+      padding: 14px 18px;
+      margin-top: 20px;
+      font-size: 0.92rem;
+      color: #8B949E;
+    }
+
+    .info-box strong {
+      color: #3FB950;
+    }
+
+    footer {
+      text-align: center;
+      padding-top: 40px;
+      color: #484F58;
+      font-size: 0.85rem;
+    }
+
+    @media (max-width: 600px) {
+      header h1 {
+        font-size: 1.8rem;
+      }
+
+      .section {
+        padding: 24px 18px;
+      }
+
+      .section-title {
+        font-size: 1.2rem;
+      }
+
+      .stats-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <header>
+      <span class="app-icon">🌙</span>
+      <h1>Nodz</h1>
+      <p class="tagline">Wake up at the right moment — every night.</p>
+    </header>
+
+    <!-- SECTION 1: What Nodz Is -->
+    <section class="section">
+      <div class="section-header">
+        <span class="section-icon">🌙</span>
+        <h2 class="section-title">What Nodz Is</h2>
+      </div>
+
+      <p>
+        Nodz is an Android app that wakes you at the optimal point in your sleep cycle — during light sleep — so you feel refreshed instead of groggy. Rather than firing at a fixed time, Nodz monitors your sleep in real time and picks the best moment within your chosen wake window.
+      </p>
+
+      <ul class="feature-list">
+        <li>
+          <strong>Real-time sleep monitoring</strong> via Android Health Connect — reads sleep stages, HRV, and movement data directly from your device.
+        </li>
+        <li>
+          <strong>Predictive sleep algorithm</strong> as a fallback — uses 90-minute cycle math combined with your personal calibration history when sensor data is unavailable.
+        </li>
+        <li>
+          <strong>Spotify wake music</strong> — starts your chosen playlist and ramps volume from 10% to 100% for a gentle rise. Falls back to your Android system ringtone if Spotify is unavailable.
+        </li>
+        <li>
+          <strong>AlarmManager failsafe</strong> — if no smart-wake trigger fires, a final alarm sounds at your scheduled time so you never oversleep.
+        </li>
+        <li>
+          <strong>Oura Ring integration</strong> — connect via Personal Access Token for richer sleep metrics including readiness score and detailed HRV.
+        </li>
+        <li>
+          <strong>Sleep Number integration</strong> — connects to your SleepIQ account via API for bed-sensor data.
+        </li>
+        <li>
+          <strong>Garmin Connect integration</strong> <span class="badge">Coming Soon</span> — Garmin device support is in development.
+        </li>
+      </ul>
+
+      <div class="info-box">
+        <strong>How the wake window works:</strong> You set a wake-up target time. Nodz opens a 30-minute window before that time and watches for light sleep. The moment it detects the right stage, it wakes you — up to 30 minutes early if that means a smoother morning.
+      </div>
+    </section>
+
+    <!-- SECTION 2: Setup & Use -->
+    <section class="section">
+      <div class="section-header">
+        <span class="section-icon">⚙️</span>
+        <h2 class="section-title">Setup &amp; Use</h2>
+      </div>
+
+      <p>Getting started takes about five minutes. Follow these steps once and Nodz handles the rest each night.</p>
+
+      <ol class="step-list">
+        <li>
+          <span class="step-number">1</span>
+          <div class="step-content">
+            <div class="step-title">Grant Health Connect permissions</div>
+            <div class="step-detail">
+              When prompted, approve access to sleep stages, heart rate, heart rate variability (HRV), and activity recognition. Nodz uses these to detect your sleep onset and identify light-sleep wake moments.
+            </div>
+          </div>
+        </li>
+        <li>
+          <span class="step-number">2</span>
+          <div class="step-content">
+            <div class="step-title">Set a wake-up alarm</div>
+            <div class="step-detail">
+              On the main screen, tap the <strong>+</strong> button. Enter your target wake time. Nodz will open a 30-minute smart-wake window before that time automatically.
+            </div>
+          </div>
+        </li>
+        <li>
+          <span class="step-number">3</span>
+          <div class="step-content">
+            <div class="step-title">Connect your integrations</div>
+            <div class="step-detail">
+              Go to <strong>Settings → Integrations</strong> and connect any devices you use:
+              <ul class="sub-list">
+                <li><strong>Health Connect</strong> — automatically detected if installed on your device.</li>
+                <li><strong>Oura Ring</strong> — enter your Personal Access Token from <a href="https://cloud.ouraring.com/personal-access-tokens" target="_blank" rel="noopener">cloud.ouraring.com/personal-access-tokens</a>.</li>
+                <li><strong>Sleep Number</strong> — enter your SleepIQ email address and password.</li>
+              </ul>
+            </div>
+          </div>
+        </li>
+        <li>
+          <span class="step-number">4</span>
+          <div class="step-content">
+            <div class="step-title">Connect Spotify (optional)</div>
+            <div class="step-detail">
+              In Settings, tap <strong>Connect Spotify</strong> and sign in. Then choose a wake playlist. Nodz will start this playlist at low volume and gradually increase it when your wake moment arrives.
+            </div>
+          </div>
+        </li>
+        <li>
+          <span class="step-number">5</span>
+          <div class="step-content">
+            <div class="step-title">Tap "Start Bedtime" when you're ready to sleep</div>
+            <div class="step-detail">
+              The app enters Lullaby mode — a dark, distraction-free screen. Nodz listens quietly for sleep onset in the background.
+            </div>
+          </div>
+        </li>
+      </ol>
+
+      <div class="flow-block">
+        <div class="flow-title">What happens while you sleep</div>
+        <ul class="flow-steps">
+          <li>
+            <span class="flow-arrow">▸</span>
+            <span><strong>Lullaby mode</strong> — dark screen; app listens for sleep onset signal.</span>
+          </li>
+          <li>
+            <span class="flow-arrow">▸</span>
+            <span><strong>Monitoring mode</strong> — once sleep is confirmed, Nodz records your cycle anchor time and begins adaptive polling.</span>
+          </li>
+          <li>
+            <span class="flow-arrow">▸</span>
+            <span><strong>Wake window</strong> — 30 minutes before your alarm, Nodz checks for a light sleep stage every 1–2 minutes.</span>
+          </li>
+          <li>
+            <span class="flow-arrow">▸</span>
+            <span><strong>Smart wake</strong> — light sleep detected? Spotify starts, volume ramps from 10% → 100%.</span>
+          </li>
+          <li>
+            <span class="flow-arrow">▸</span>
+            <span><strong>Failsafe</strong> — no smart-wake trigger? AlarmManager fires at alarm time minus 3 minutes.</span>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- SECTION 3: Viewing Results -->
+    <section class="section">
+      <div class="section-header">
+        <span class="section-icon">📊</span>
+        <h2 class="section-title">Viewing Your Sleep Results</h2>
+      </div>
+
+      <p>
+        After each night, open the <strong>Dashboard</strong> screen to review your sleep data. The Dashboard shows your full history and improves its accuracy as it learns your personal sleep patterns over time.
+      </p>
+
+      <ul class="feature-list">
+        <li>
+          <strong>Sleep history</strong> — a chronological log of every tracked night, sorted by date.
+        </li>
+        <li>
+          <strong>Total sleep</strong> — total hours and minutes of confirmed sleep per night.
+        </li>
+        <li>
+          <strong>Sleep stages breakdown</strong> — proportion of time spent in light, REM, deep, and awake stages.
+        </li>
+        <li>
+          <strong>HRV</strong> — heart rate variability readings for each night (requires Health Connect or Oura Ring).
+        </li>
+        <li>
+          <strong>Readiness score</strong> — Oura-sourced readiness score when Oura Ring is connected.
+        </li>
+        <li>
+          <strong>Cycle count</strong> — number of full 90-minute sleep cycles completed.
+        </li>
+      </ul>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">Data Retention</div>
+          <div class="stat-value">30 days</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Calibration Window</div>
+          <div class="stat-value">14 nights</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Default Cycle Length</div>
+          <div class="stat-value">90 minutes</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Smart Wake Window</div>
+          <div class="stat-value">30 minutes</div>
+        </div>
+      </div>
+
+      <div class="info-box" style="margin-top: 24px;">
+        <strong>Calibration tip:</strong> Nodz personalizes its cycle-length estimate using a 14-night rolling window. The more nights you track, the more accurately it predicts your ideal wake moment. Full calibration is typically reached after two weeks of consistent use.
+      </div>
+    </section>
+
+    <footer>
+      <p>Nodz &mdash; Sleep Cycle Smart Alarm &mdash; Android</p>
+    </footer>
+
+  </div>
+</body>
+</html>
